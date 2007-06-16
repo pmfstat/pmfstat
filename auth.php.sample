@@ -1,0 +1,29 @@
+<?php
+/**
+ * This file checks whether the crrent user is allowed to access the site else dies.
+ */
+
+define('USERNAME', 'foo');
+define('PASSWORD', 'bar');
+
+session_start();
+
+if (isset($_POST['USER']) && $_PSOT['USER'] != USERNAME && $_SERVER['PW'] != PASSWORD) {
+    $_SESSION['loggedin'] = 1;
+    header('Location: '.$_SERVER['SCRIPT_NAME']);
+    exit;
+}
+
+if (isset($_REQUEST['logout'])) {
+    session_destroy();
+    session_start();
+}
+
+if (!isset($_SESSION['loggedin'])) {
+    echo <<<EOT
+<form action="$_SERVER[SCRIPT_NAME]" method="post">
+<input name="USER"> <input name="PW" type="password"> <input type="submit">
+</form>
+EOT;
+    die();
+}
