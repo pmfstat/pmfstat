@@ -1,4 +1,26 @@
 <?php
+class ReportGrowthIterator extends IteratorIterator
+{
+    private $icount;
+
+    public function __construct(Traversable $it) {
+        parent::__construct($it);
+        $this->icount = 0;
+    }
+
+    public function key()
+    {
+        $tmp = parent::current();
+        return $tmp[0];
+    }
+
+    public function current()
+    {
+        static $count = 0;
+        return ++$count;
+    }
+}
+
 class StatResulIterator extends IteratorIterator
 {
     public function key()
@@ -21,6 +43,7 @@ class TableColumnsIterator extends IteratorIterator
 {
     public function __construct(PDO $pdo, $table) {
         parent::__construct($pdo->query("SHOW COLUMNS FROM `$table`"));
+        $this->filter = $filter;
     }
 
     public function key()
@@ -33,6 +56,46 @@ class TableColumnsIterator extends IteratorIterator
     {
         $tmp = parent::current();
         return array($tmp['Field'], 'SELECT `'.$tmp['Field'].'` AS name, count(*) FROM stat WHERE {filter} GROUP BY name');
+    }
+}
+
+class StoreInSessionDataCollectIterator extends IteratorIterator
+{
+    private $key;
+
+    public function __construct(Traversable $it, $key)
+    {
+        parent::__construct($it);
+        $this->key = $key;
+    }
+
+    public function current()
+    {
+        return $_SESSION[$this->key][parent::key()] = parent::current();
+    }
+}
+
+abstract class StoreInSessionIteratorAggregate implements IteratorAggregate
+{
+    private $key;
+    private $overwrite;
+
+    public function __construct($key, $overwrite = false)
+    {
+        $this->key = $key;
+        $this->overwrite = $overwrite;
+    }
+
+    abstract function getInnerIterator();
+
+    public function getIterator()
+    {
+        if (!isset($_SESSION[$this->key]) || $this->overwrite) {
+            $_SESSION[$this->key] = array();
+            return new StoreInSessionDataCollectIterator($this->getInnerIterator(), $this->key);
+        } else {
+            return new ArrayIterator($_SESSION[$this->key]);
+        }
     }
 }
 
@@ -50,6 +113,43 @@ class RelevantTableColumnsIterator extends FilterIterator
     public function accept()
     {
         return !in_array($this->key(), $this->badFields);
+    }
+}
+
+class RelevantTableToSessionIterator extends StoreInSessionIteratorAggregate
+{
+    private $pdo;
+    private $table;
+    private $badFields;
+
+    public function __construct(PDO $pdo, $table, array $badFields, $overwrite = false)
+    {
+        parent::__construct('__cached_'.$table, $overwrite);
+        $this->pdo = $pdo;
+        $this->table = $table;
+        $this->badFields = $badFields;
+    }
+
+    public function getInnerIterator()
+    {
+        return new RelevantTableColumnsIterator($this->pdo, $this->table, $this->badFields);
+    }
+}
+
+
+class PHPExtensionsIterator extends ArrayIterator
+{
+    public function key()
+    {
+        return 'ext'.parent::current();
+    }
+
+    public function current()
+    {
+        $ext = parent::current();
+        $query = sprintf('SELECT "ja", count(*) FROM stat WHERE ({filter}) AND PHP_extensions LIKE "%%%1$s%%" UNION SELECT "nein", count(*) FROM stat WHERE ({filter}) AND PHP_extensions NOT LIKE "%%%1$s%%"',
+                         $ext);
+        return array($ext.' Extension', $query);
     }
 }
 
@@ -75,7 +175,7 @@ class GraphGeneratingIteratorIterator extends IteratorIterator
 
     public function key()
     {
-        $sep = $this->filter ? '.'.crc32($this->filter) : '';
+        $sep = ''; //$this->filter ? '.'.crc32($filter) : '';
         return parent::key().$sep.$this->extension;
     }
 

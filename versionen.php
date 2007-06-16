@@ -1,6 +1,8 @@
 <?php
 include('./init.php');
 
+echo '<p>This file only exists for historical reasons, pleas go over to <a href="xul.php">xul.php</a> to have a nice inteface not killing the server.</p>';
+
 $it = new GraphTagGeneratingIteratorIterator($pdo, $def);
 
 foreach ($it as $d)

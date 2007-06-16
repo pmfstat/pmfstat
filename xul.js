@@ -1,10 +1,52 @@
-window.onload = getDiagramList;
+window.onload = initStatViewer;
 
 var selectedcol = null;
 
-function addToFilter(event)
+function initStatViewer()
 {
-    alert(selectedcol);
+    getDiagramList();
+
+    window.onload = null;
+}
+
+
+function getFilterAndSettingsURLString()
+{
+    return 'filter=' + escape(document.getElementById('filtertext').value) + '&' + 'width='  + escape(document.getElementById('setting_chart_x').value) + '&' + 'height=' + escape(document.getElementById('setting_chart_y').value);
+}
+
+function doXHRequest(url, success)
+{
+    var httpRequest = new XMLHttpRequest();
+    
+    document.getElementById("statmainwindow").setAttribute("wait-cursor", "true");
+    document.getElementById("filterbutton").setAttribute("disabled", "true");
+
+    httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState == 4) {
+            if (httpRequest.status == 200) {
+                try {
+                    success(httpRequest.responseText);
+                } catch(e) {
+
+                }
+
+                document.getElementById("filterbutton").setAttribute("disabled", "false");
+                document.getElementById("statmainwindow").removeAttribute("wait-cursor");
+            } else {
+                alert('There was a problem with the request.');
+            }
+        }
+    };
+
+    httpRequest.open('GET', url, true);
+    httpRequest.send(null);
+}
+
+function addToFilter(newcondition)
+{
+    var element = document.getElementById('filtertext');
+    element.value = (element.value == "") ? newcondition : "("+element.value+") AND "+newcondition;
 }
 
 function applyFilter()
@@ -14,7 +56,6 @@ function applyFilter()
     if (document.getElementById('dumptab') == document.getElementById("maintabbox").selectedTab) {
         getDump(true);
     } else {
-//        var list = document.getElementById('dumplist');
         var list = document.getElementById('dumptree');
     
         while (list.hasChildNodes()) {
@@ -40,7 +81,6 @@ function loadedDigramList(json)
 
     eval("all = "+json);
     diagrams = all['dat'];
-    document.getElementById("querybox").setAttribute("value", all["queries"]);
 
     while (list.hasChildNodes()) {
         list.removeChild(list.firstChild);
@@ -58,32 +98,17 @@ function loadedDigramList(json)
 
 function getDiagramList()
 {
-    var httpRequest = new XMLHttpRequest();
-    
-    document.getElementById("filterbutton").setAttribute("disabled", "true");
-
-    httpRequest.onreadystatechange = function() {
-        if (httpRequest.readyState == 4) {
-            if (httpRequest.status == 200) {
-                loadedDigramList(httpRequest.responseText);
-                document.getElementById("filterbutton").setAttribute("disabled", "false");
-            } else {
-                alert('There was a problem with the request.');
-            }
-        }
-    };
-
-    httpRequest.open('GET', 'json.php?action=chartlist', true);
-    httpRequest.send(null);
-
-    window.onload = null;
+    doXHRequest('json.php?action=chartlist', loadedDigramList);
 }
 
 function showSVG(chart, exportformat)
 {
-    var url = 'chart.php?d='+escape(chart)+'&filter='+escape(document.getElementById('filtertext').value)
+    var url = 'chart.php?d='+escape(chart)+'&'+getFilterAndSettingsURLString();
+
     if (exportformat != null) {
-        url += "&export=" + escape(exportformat);
+        url += "&export=1&format=" + escape(exportformat);
+    } else {
+        url += "&format=" + escape(document.getElementById("setting_chart_format").getAttribute('label'));
     }
     document.getElementById('diagramframe').setAttribute('src', url);
 }
@@ -106,16 +131,19 @@ function loadedDump(dat)
     var children = document.createElement('treechildren');
     
     while (tree.hasChildNodes()) {
-        tree.removeChild(list.firstChild);
+        tree.removeChild(tree.firstChild);
     }
 
     eval('d = '+dat);
 
     for (var key in d.header) {
         var tmp = document.createElement('treecol');
+        var splitter = document.createElement('splitter');
+        splitter.setAttribute('class', 'tree-splitter');
         tmp.setAttribute('label', d.header[key]);
         tmp.setAttribute('flex', '1');
         cols.appendChild(tmp);
+        cols.appendChild(splitter);
     }
     tree.appendChild(cols);
 
@@ -126,7 +154,6 @@ function loadedDump(dat)
         for (var content in d.data[key]) {
            var tmp = document.createElement('treecell');
            tmp.setAttribute('label', d.data[key][content]);
-           tmp.setAttribute('oncontextmenu', 'selectedcol="'+content+'";');
            row.appendChild(tmp);
        }
        item.appendChild(row);
@@ -136,71 +163,43 @@ function loadedDump(dat)
 
     document.getElementById("filterbutton").setAttribute("disabled", "false");
     document.getElementById("statmainwindow").removeAttribute("wait-cursor"); //, "true");
-/*
-    var d;
-    var list = document.getElementById('dumplist');
-    var cols = document.createElement('listcols');
-    var head = document.createElement('listhead');
-    
-    while (list.hasChildNodes()) {
-        list.removeChild(list.firstChild);
-    }
-
-    eval('d = '+dat);
-
-    for (var key in d.header) {
-        var tmp = document.createElement('listheader');
-        tmp.setAttribute('label', d.header[key]);
-        head.appendChild(tmp);
-
-        tmp = document.createElement('listcol');
-        tmp.setAttribute('flex', '1');
-        cols.appendChild(tmp);
-    }
-    list.appendChild(head);
-    list.appendChild(cols);
-
-    for (var key in d.data) {
-        var row = document.createElement('listitem');
-
-        for (var content in d.data[key]) {
-           var tmp = document.createElement('listcell');
-           tmp.setAttribute('label', d.data[key][content]);
-           row.appendChild(tmp);
-       }    
-       list.appendChild(row);
-    }
-
-    document.getElementById("filterbutton").setAttribute("disabled", "false");
-    document.getElementById("statmainwindow").removeAttribute("wait-cursor"); //, "true");
-*/
 }
 
 function getDump(force)
 {
-//    if (!force && document.getElementById('dumplist').hasChildNodes()) {
     if (!force && document.getElementById('dumptree').hasChildNodes()) {
         return;
     }
 
-    var httpRequest = new XMLHttpRequest();
-    
-    document.getElementById("filterbutton").setAttribute("disabled", "true");
-    document.getElementById("statmainwindow").setAttribute("wait-cursor", "false");
+    doXHRequest('json.php?action=dump&filter='+escape(document.getElementById('filtertext').value), loadedDump);
+}
 
-    httpRequest.onreadystatechange = function() {
-        if (httpRequest.readyState == 4) {
-            if (httpRequest.status == 200) {
-                loadedDump(httpRequest.responseText);
-                document.getElementById("filterbutton").setAttribute("disabled", "false");
-            } else {
-                alert('There was a problem with the request.');
-            }
-        }
-    };
 
-    httpRequest.open('GET', 'json.php?action=dump&filter='+escape(document.getElementById('filtertext').value), true);
-    httpRequest.send(null);
+function exportToServer(format, event)
+{
+    var url = 'chart.php?' + 'format=' + escape(format) + '&export=server&d=' + escape(document.getElementById("diagramlist").selectedItem.value) + '&' + getFilterAndSettingsURLString();
 
-    window.onload = null;
+    doXHRequest(url, window.open);
+}
+
+function showSVGFromSelection(obj)
+{
+    if (!obj.selectedItem) {
+        return;
+    }
+
+    var url = obj.selectedItem.value;
+    showSVG(url, null);
+}
+
+function loadedQueryList(text)
+{
+    var tmp;
+    eval('tmp='+text);
+    document.getElementById("querybox").value = tmp;
+}
+
+function getQueryList()
+{
+    doXHRequest('json.php?action=querylist', loadedQueryList);
 }

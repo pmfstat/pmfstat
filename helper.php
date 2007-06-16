@@ -22,6 +22,8 @@ class VersionGraph extends ezcGraphPieChart
         $this->filter = $filter;
 
         $this->setDataQuery($query);
+
+            $this->renderer = new ezcGraphRenderer3d(); 
     }
 
     public function setDataQuery($sql)
@@ -33,6 +35,7 @@ class VersionGraph extends ezcGraphPieChart
     public function render($w, $h, $f = null)
     {
         try {
+//            $this->renderer = new ezcGraphRenderer3d(); 
             $this->renderer->options->moveOut = .2;
 
             $this->renderer->options->pieChartOffset = 63;
@@ -50,6 +53,7 @@ class VersionGraph extends ezcGraphPieChart
 
             $this->renderer->options->pieChartSymbolColor = '#000000';
 
+
             parent::render($w, $h, $f);
         } catch (Exception $e) {
             file_put_contents($f, $e->__toString());
@@ -63,13 +67,19 @@ class PDODebug extends PDO
 {
     private $queries = array();
 
+    public function __construct($dsn, $user, $pw)
+    {
+        parent::__construct($dsn, $user, $pw);
+        $this->queries &= $_SESSION['queries'];
+    }
+
     public function query($sql)
     {
-        $this->queries[] = $sql;
+        $_SESSION['queries'][] = $sql;
         return parent::query($sql);
     }
 
     public function getQueries() {
-        return $this->queries;
+        return $_SESSION['queries'];
     }
 }
