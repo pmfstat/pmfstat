@@ -1,5 +1,5 @@
 <?php
-require_once('../inc/sql.php');
+require_once('./init.php');
 
 try {
     $pdo = new PDO('mysql:host='.$db_server.';dbname='.$db_name, $db_user, $db_pw);
