@@ -1,33 +1,109 @@
 <?php
 require_once('./init.php');
 
-try {
-    $pdo = new PDO('mysql:host='.$db_server.';dbname='.$db_name, $db_user, $db_pw);
-} catch (Exception $e) {
-    die("Internal server error while processing statistic data: Couldn't connect to database");
-}
+$mode   = isset($_GET['mode'])   ? $_GET['mode']   : 'html';
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 1;
 
-$stmt = $pdo->query("SELECT * FROM stat");
+$stmt = $pdo->query("SELECT * FROM stat WHERE $filter");
 $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-$first = true;
+$it = new IteratorIterator($stmt);
 
-echo "<table border='1'>\n";
-foreach ($stmt as $row)
+switch ($mode) { 
+case 'html':
+    $dump = new dumphtml($it);
+    break;
+case 'sql':
+    $dump = new dumpsql($it);
+    break;
+default:
+    die('Invalid mode');
+    break;
+}
+$dump->run();
+
+abstract class dump {
+    protected $it;
+
+    public function __construct(Iterator $it)
+    {
+        $this->it = $it;
+    }
+
+    abstract public function init();
+    abstract public function printcurrent(Iterator $i);
+    abstract public function finalize();
+
+    public function run()
+    {
+        $this->init();
+        iterator_apply($this->it, array($this, 'printcurrent'), array($this->it));
+        $this->finalize();
+    }
+}
+
+abstract class dumpnoinitorfinalize extends dump {
+    public function init() {}
+    public function finalize() {}
+}
+
+class dumphtml extends dump
 {
-    if ($first) {
+    public function init()
+    {
+        echo "<table border='1'>\n";
+    }
+
+    public function printcurrent(Iterator $it) {
+        static $first = true;
+
+        if ($first) {
+            echo '<tr>';
+            foreach ($it->current() as $name => $value) {
+                echo '<th>'.htmlentities($name).'</th>';
+            }
+            echo "</tr>\n";
+            $first = false;
+        }
+
         echo '<tr>';
-        foreach ($row as $name => $value) {
-            echo '<th>'.htmlentities($name).'</th>';
+        foreach ($it->current() as $row) {
+            echo '<td>'.htmlentities($row).'</td>';
         }
         echo "</tr>\n";
-        $first = false;
+
+        return true;
     }
 
-    echo '<tr>';
-    foreach ($row as $row) {
-        echo '<td>'.htmlentities($row).'</td>';
+    public function finalize()
+    {
+        echo '</table>';
     }
-    echo "</tr>\n";
 }
-echo "</table>\n";
+
+class dumpsql extends dumpnoinitorfinalize
+{
+    protected $tablename = 'stat';
+
+    public function printcurrent(Iterator $it)
+    {
+        global $pdo;
+        $values = '';
+
+        echo 'INSERT INTO ', $this->tablename, ' (';
+        $cit = new CachingIterator(new ArrayIterator($it->current()));
+        foreach ($cit as $name => $value) {
+            echo '`', $name, '`';
+            $values .= is_numeric($value) ? $value : $pdo->quote($value);
+            if ($cit->hasNext()) {
+                echo ', ';
+                $values .= ', ';
+            }
+        }
+        
+        echo ') VALUES ('.$values.");\n";
+        
+        return true;
+    }
+}
+
