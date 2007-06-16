@@ -24,7 +24,5 @@ $badFields = array('id', 'report_date', 'PHP_extensions', 'q_other', 'PHP_disabl
 $def = new AppendIterator();
 $def->append(new ArrayIterator($diagramme));
 $def->append(new PHPExtensionsIterator($extensions));
-//$def->append(new IteratorIterator(new RelevantTableToSessionIterator($pdo, 'stat', $badFields)));
-$def->append(new RelevantTableColumnsIterator($pdo, 'stat', $badFields));
+$def->append(new IteratorIterator(new RelevantTableToSessionIterator($pdo, 'stat', $badFields)));
 
-//echo '<pre>';var_dump($_SESSION); die();
