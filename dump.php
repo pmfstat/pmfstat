@@ -14,6 +14,7 @@ case 'html':
     $dump = new dumphtml($it);
     break;
 case 'sql':
+    header('Content-Type: text/plain');
     $dump = new dumpsql($it);
     break;
 default:
