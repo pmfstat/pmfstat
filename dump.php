@@ -2,7 +2,7 @@
 require_once('./init.php');
 
 $mode   = isset($_GET['mode'])   ? $_GET['mode']   : 'html';
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 1;
+$filter = isset($_GET['filter']) ? stripslashes($_GET['filter']) : 1;
 
 $stmt = $pdo->query("SELECT * FROM stat WHERE $filter");
 $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -17,10 +17,21 @@ case 'sql':
     header('Content-Type: text/plain');
     $dump = new dumpsql($it);
     break;
+case 'csv':
+    header('Content-Type: text/plain');
+    $dump = new dumpcsv($it);
+    break;
 default:
     die('Invalid mode');
     break;
 }
+
+if (isset($_GET['export']) && $_GET['export'] != 'server') {
+    $filename = 'dump_'.date('YmdHis').'.'.$mode;
+    header('Content-Disposition: attachment; filename="'.$filename.'"');
+}
+
+
 $dump->run();
 
 abstract class dump {
@@ -104,6 +115,22 @@ class dumpsql extends dumpnoinitorfinalize
         
         echo ') VALUES ('.$values.");\n";
         
+        return true;
+    }
+}
+
+class dumpcsv extends dumpnoinitorfinalize
+{
+    public function printcurrent(Iterator $it)
+    {
+        $cit = new CachingIterator(new ArrayIterator($it->current()));
+        foreach ($cit as $name => $value) {
+            echo is_numeric($value) ? $value : '"'.addslashes($value).'"';
+            if ($cit->hasNext()) {
+                echo ',';
+            }
+        }
+        echo "\n";
         return true;
     }
 }

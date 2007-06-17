@@ -101,6 +101,12 @@ function getDiagramList()
     doXHRequest('json.php?action=chartlist', loadedDigramList);
 }
 
+function exportDump(format, sender)
+{
+    var url = 'dump.php?export=1&mode=' + escape(format) +'&'+getFilterAndSettingsURLString();
+    document.getElementById('diagramframe').setAttribute('src', url);
+}
+
 function showSVG(chart, exportformat)
 {
     var url = 'chart.php?d='+escape(chart)+'&'+getFilterAndSettingsURLString();

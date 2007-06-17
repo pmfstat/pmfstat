@@ -28,7 +28,7 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
   <popup id="dumpmenu">
     <menuitem label="Add to filter" oncommand="" />
     <menuitem label="Export as HTML" oncommand="exportDump('html', this);" />
-    <menuitem label="Export as CVS" oncommand="exportDump('cvs', this);" />
+    <menuitem label="Export as CSV" oncommand="exportDump('csv', this);" />
     <menuitem label="Export as SQL" oncommand="exportDump('sql', this);" />
   </popup>
 </popupset>
@@ -36,7 +36,9 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
 <popupset>
   <popup id="filtermenu">
     <menuitem label="Add filter for PMF 2.0.0" oncommand="addToFilter('`phpMyFAQ_main.currentVersion` = &quot;2.0.0&quot;');" />
+    <menuitem label="Add filter for PMF 2.0.1" oncommand="addToFilter('`phpMyFAQ_main.currentVersion` = &quot;2.0.1&quot;');" />
     <menuitem label="Add filter for host != 127.0.0.1" oncommand="addToFilter('System_ip NOT LIKE &quot;127.0.%&quot;');" />
+    <menuitem label="Add filter for OS = Windows" oncommand="addToFilter('System_OS = &quot;WINNT&quot;');" />
   </popup>
 </popupset>
 
