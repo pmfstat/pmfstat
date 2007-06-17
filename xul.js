@@ -1,7 +1,5 @@
 window.onload = initStatViewer;
 
-var selectedcol = null;
-
 function initStatViewer()
 {
     getDiagramList();
