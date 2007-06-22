@@ -25,7 +25,7 @@ class ReportGrowthStepIterator extends ReportGrowthIterator
 {
     private $steps;
 
-    public function __construct(Traversable $it, $step = 5)
+    public function __construct(Traversable $it, $steps = 5)
     {
         if (!($it instanceof Iterator)) {
             $it = new IteratorIterator($it);
