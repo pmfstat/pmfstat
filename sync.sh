@@ -1,6 +1,6 @@
 #!/bin/sh
 if test -n "${PMF_FTP_HOST}"; then
-    PMF_FTP_HOST = "phpmyfaq.net";
+    PMF_FTP_HOST="phpmyfaq.net";
 fi
 
 if test -n "${PMF_FTP_USER}" && test -n "${PMF_FTP_PATH}"; then
