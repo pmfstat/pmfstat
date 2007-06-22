@@ -21,6 +21,27 @@ class ReportGrowthIterator extends IteratorIterator
     }
 }
 
+class ReportGrowthStepIterator extends ReportGrowthIterator
+{
+    private $steps;
+
+    public function __construct(Traversable $it, $step = 5)
+    {
+        if (!($it instanceof Iterator)) {
+            $it = new IteratorIterator($it);
+        }
+        parent::__construct(new CachingIterator($it));
+        $this->steps = $steps;
+    }
+
+    public function next()
+    {
+        for ($i = 0; $i < $this->steps, $this->hasNext(); $i++) {
+            parent::next();
+        }
+    }
+}
+
 class StatResulIterator extends IteratorIterator
 {
     public function key()
