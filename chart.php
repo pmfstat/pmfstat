@@ -50,7 +50,7 @@ try {
         $graph->xAxis->dateFormat = "Y/m/d";
 
         $sql = "SELECT report_date FROM stat WHERE $filter ORDER BY report_date";
-        $graph->data['Machine 1'] = new ezcGraphArrayDataSet(new ReportGrowthIterator($pdo->query($sql)));
+        $graph->data['Machine 1'] = new ezcGraphArrayDataSet(new ReportGrowthStepIterator($pdo->query($sql)));
         break;
 
     default;
