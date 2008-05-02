@@ -1,62 +1,24 @@
 <?php
-include('util.php');
 
-/**
- * This class collects data which is used to create some usage statistics.
- *
- * The collected data is - after authorization of the administrator - submitted
- * to a central server. For privacy reasons we try to collect only data which aren't private
- * or don't give any information which might help to identify the user.
- *
- * @author      Johannes Schlueter <johannes@php.net>
- * @copyright   (c) 2007-2008 Johannes Schlueter 
- */
-
-class Questionnaire_Data
+interface Questionnaire_Data_Provider
 {
-    private $data = null;
+    public function getIdentifier();
+    public function getData();
+}
 
-    /**
-     * Constructor.
-     *
-     * @param   array
-     * @param   string
-     */
-    function __construct()
+class Questionnaire_PHP_Data_Provider implements Questionnaire_Data_Provider
+{
+    public function getIdentifier()
     {
+        return 'PHP';
     }
-
-    /**
-     * Get data as an array.
-     *
-     * @return  array All Data
-     */
-    function get()
-    {
-        if (!$this->data) {
-            $this->collect();
-        }
-
-        return $this->data;
-    }
-
-    /**
-     * Collect info into the data property.
-     *
-     * @return  void
-     */
-    function collect()
-    {
-        $this->data = iterator_to_array(new Questionaire_CollectionInformation($this)); 
-    }
-
 
     /**
      * Get data about the PHP runtime setup.
      *
      * @return  array
      */
-    function collectPHPInfo()
+    public function getData()
     {
         return array(
             'version'                       => PHP_VERSION,
@@ -82,13 +44,22 @@ class Questionnaire_Data
             'extensions'                    => get_loaded_extensions()
         );
     }
+}
+
+
+class Questionnaire_System_Data_Provider implements Questionnaire_Data_Provider
+{
+    public function getIdentifier()
+    {
+        return 'System';
+    }
 
     /**
      * Get data about the general system information, like OS or IP (shortened).
      *
      * @return  array
      */
-    function collectSystemInfo()
+    public function getData()
     {
         // Start discovering the IPV4 server address, if available
         $serverAddress = '0.0.0.0';
@@ -112,6 +83,65 @@ class Questionnaire_Data
             // - 192.168.0.0/16
             'ip'    => $aIPAddress[0].'.'.$aIPAddress[1].'.XXX.YYY'
         );
+    }
+}
+
+/**
+ * This class collects data which is used to create some usage statistics.
+ *
+ * The collected data is - after authorization of the administrator - submitted
+ * to a central server. For privacy reasons we try to collect only data which aren't private
+ * or don't give any information which might help to identify the user.
+ *
+ * @author      Johannes Schlueter <johannes@php.net>
+ * @copyright   (c) 2007-2008 Johannes Schlueter 
+ */
+
+class Questionnaire_Data_Collector
+{
+    private $providers;
+    private $data = null;
+
+    /**
+     * Constructor.
+     *
+     * @param   array
+     * @param   string
+     */
+    function __construct()
+    {
+        $this->providers = new SplObjectStorage();
+    }
+
+    public function addDataProvider(Questionnaire_Data_Provider $provider)
+    {
+        $this->providers->attach($provider);
+    }
+
+    /**
+     * Get data as an array.
+     *
+     * @return  array All Data
+     */
+    function get()
+    {
+        if (!$this->data) {
+            $this->collect();
+        }
+
+        return $this->data;
+    }
+
+    /**
+     * Collect info into the data property.
+     *
+     * @return  void
+     */
+    function collect()
+    {
+        foreach ($this->providers as $value) {
+            $this->data[$value->getIdentifier()] = $value->getData();
+        } 
     }
 }
 

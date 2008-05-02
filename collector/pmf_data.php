@@ -1,7 +1,8 @@
 <?Php
 include('questionnaire.php');
 
-class PMF_Dat extends Questionnaire_Data {
+class Questionnaire_phpMyFAQ_Data_Provider implements Questionnaire_Data_Provider
+{
     private $config;
     private $oldversion;
 
@@ -13,10 +14,15 @@ class PMF_Dat extends Questionnaire_Data {
      */
     function __construct($config, $oldversion = 0)
     {
-	parent::__construct();
         $this->config = $config;
         $this->config['oldversion'] = $oldversion;
     }
+
+    public function getIdentifier()
+    {
+        return 'phpMyFAQ';
+    }
+
 
     /**
      * Get data about this phpMyFAQ installation.
@@ -27,7 +33,7 @@ class PMF_Dat extends Questionnaire_Data {
      * @author  Johannes Schlueter <johannes@php.net>
      * @author  Matteo Scaramuccia <matteo@scaramuccia.com>
      */
-    function collectphpMyFAQInfo()
+    public function getData()
     {
         // oldversion isn't a real PMF config option and it is just used by this class
         $settings = array(
@@ -55,8 +61,12 @@ class PMF_Dat extends Questionnaire_Data {
     }
 }
 
-$q = new PMF_Dat(array(), 1);
-$q->collect();
-var_Dump($q->get());
 
+$c = new Questionnaire_Data_Collector();
+$c->addDataProvider(new Questionnaire_PHP_Data_Provider());
+$c->addDataProvider(new Questionnaire_System_Data_Provider());
+$c->addDataProvider(new Questionnaire_phpMyFAQ_Data_Provider(array(), "1.0"));
+
+$c->collect();
+var_Dump($c->get());
 
