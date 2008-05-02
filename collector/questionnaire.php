@@ -1,29 +1,18 @@
 <?php
-/*
- * $Id: questionnaire.php,v 1.13 2007/06/06 22:12:13 matteo Exp $
- *
+include('util.php');
+
+/**
  * This class collects data which is used to create some usage statistics.
  *
  * The collected data is - after authorization of the administrator - submitted
- * to phpMyFAQ.de. For privacy reasons we try to collect only data which aren't private
+ * to a central server. For privacy reasons we try to collect only data which aren't private
  * or don't give any information which might help to identify the user.
  *
  * @author      Johannes Schlueter <johannes@php.net>
- * @since       2007-03-17
- * @copyright   (c) 2007 phpMyFAQ Team
- *
- * The contents of this file are subject to the Mozilla Public License
- * Version 1.1 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
+ * @copyright   (c) 2007-2008 Johannes Schlueter 
  */
 
-class PMF_Questionnaire_Data
+class Questionnaire_Data
 {
     var $data = null;
     var $config;
@@ -34,12 +23,8 @@ class PMF_Questionnaire_Data
      *
      * @param   array
      * @param   string
-     * @return  void
-     * @access  public
-     * @since   2007-03-17
-     * @author  Johannes Schlueter <johannes@php.net>
      */
-    function PMF_Questionnaire_Data($config, $oldversion = 0)
+    function Questionnaire_Data($config, $oldversion = 0)
     {
         $this->config = $config;
         $this->config['oldversion'] = $oldversion;
@@ -48,10 +33,7 @@ class PMF_Questionnaire_Data
     /**
      * Get data as an array.
      *
-     * @return  array
-     * @access  public
-     * @since   2007-03-17
-     * @author  Johannes Schlueter <johannes@php.net>
+     * @return  array All Data
      */
     function get()
     {
@@ -66,54 +48,20 @@ class PMF_Questionnaire_Data
      * Collect info into the data property.
      *
      * @return  void
-     * @access  public
-     * @since   2007-03-17
-     * @author  Johannes Schlueter <johannes@php.net>
      */
     function collect()
     {
+        $this->data = iterator_to_array(new Questionaire_CollectionInformation($this)); 
+/*
+	$ro = new ReflectionObject($this);
         $this->data = array(
             'phpMyFAQ'  => $this->getPmfInfo(),
             'PHP'       => $this->getPHPInfo(),
             'System'    => $this->getSystemInfo()
         );
+*/
     }
 
-    /**
-     * Get data about this phpMyFAQ installation.
-     *
-     * @return  array
-     * @access  public
-     * @since   2007-03-17
-     * @author  Johannes Schlueter <johannes@php.net>
-     * @author  Matteo Scaramuccia <matteo@scaramuccia.com>
-     */
-    function getPMFInfo()
-    {
-        // oldversion isn't a real PMF config option and it is just used by this class
-        $settings = array(
-            'main.currentVersion',
-            'oldversion',
-            'main.language',
-            'main.permLevel',
-            'main.languageDetection',
-            'main.ldapSupport'
-        );
-
-        if (function_exists('array_intersect_key')) {
-            return array_intersect_key($this->config, array_flip($settings));
-        } else {
-            $result = array();
-            $selected = array_flip($settings);
-            foreach ($this->config as $key => $value) {
-                if (array_key_exists($key, $selected)) {
-                    $result[$key] = $this->config[$key];
-                }
-            }
-
-            return $result;
-        }
-    }
 
     /**
      * Get data about the PHP runtime setup.
