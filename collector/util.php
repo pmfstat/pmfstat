@@ -11,7 +11,7 @@ class Questionaire_CollectionInformation extends FilterIterator {
     }
 
     public function accept() {
-       $retval = preg_match('/^get([a-zA-Z0-9]+)Info$/', parent::current()->getName(), $matches);
+       $retval = preg_match('/^collect([a-zA-Z0-9]+)Info$/', parent::current()->getName(), $matches);
        if ($retval) {
            $this->key = $matches[1];
        }

@@ -2,6 +2,22 @@
 include('questionnaire.php');
 
 class PMF_Dat extends Questionnaire_Data {
+    private $config;
+    private $oldversion;
+
+    /**
+     * Constructor.
+     *
+     * @param   array
+     * @param   string
+     */
+    function __construct($config, $oldversion = 0)
+    {
+	parent::__construct();
+        $this->config = $config;
+        $this->config['oldversion'] = $oldversion;
+    }
+
     /**
      * Get data about this phpMyFAQ installation.
      *
@@ -11,7 +27,7 @@ class PMF_Dat extends Questionnaire_Data {
      * @author  Johannes Schlueter <johannes@php.net>
      * @author  Matteo Scaramuccia <matteo@scaramuccia.com>
      */
-    function getphpMyFAQInfo()
+    function collectphpMyFAQInfo()
     {
         // oldversion isn't a real PMF config option and it is just used by this class
         $settings = array(

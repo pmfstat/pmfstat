@@ -14,9 +14,7 @@ include('util.php');
 
 class Questionnaire_Data
 {
-    var $data = null;
-    var $config;
-    var $oldversion;
+    private $data = null;
 
     /**
      * Constructor.
@@ -24,10 +22,8 @@ class Questionnaire_Data
      * @param   array
      * @param   string
      */
-    function Questionnaire_Data($config, $oldversion = 0)
+    function __construct()
     {
-        $this->config = $config;
-        $this->config['oldversion'] = $oldversion;
     }
 
     /**
@@ -52,14 +48,6 @@ class Questionnaire_Data
     function collect()
     {
         $this->data = iterator_to_array(new Questionaire_CollectionInformation($this)); 
-/*
-	$ro = new ReflectionObject($this);
-        $this->data = array(
-            'phpMyFAQ'  => $this->getPmfInfo(),
-            'PHP'       => $this->getPHPInfo(),
-            'System'    => $this->getSystemInfo()
-        );
-*/
     }
 
 
@@ -67,11 +55,8 @@ class Questionnaire_Data
      * Get data about the PHP runtime setup.
      *
      * @return  array
-     * @access  public
-     * @since   2007-03-17
-     * @author  Johannes Schlueter <johannes@php.net>
      */
-    function getPHPInfo()
+    function collectPHPInfo()
     {
         return array(
             'version'                       => PHP_VERSION,
@@ -102,11 +87,8 @@ class Questionnaire_Data
      * Get data about the general system information, like OS or IP (shortened).
      *
      * @return  array
-     * @access  public
-     * @since   2007-03-17
-     * @author  Johannes Schlueter <johannes@php.net>
      */
-    function getSystemInfo()
+    function collectSystemInfo()
     {
         // Start discovering the IPV4 server address, if available
         $serverAddress = '0.0.0.0';
@@ -140,9 +122,6 @@ class Questionnaire_Data
  * @param   string
  * @param   string
  * @return  void
- * @access  public
- * @since   2007-03-17
- * @author  Johannes Schlueter <johannes@php.net>
  */
 function data_printer($value, $key, $ident = "\n\t")
 {
