@@ -67,6 +67,5 @@ $c->addDataProvider(new Questionnaire_PHP_Data_Provider());
 $c->addDataProvider(new Questionnaire_System_Data_Provider());
 $c->addDataProvider(new Questionnaire_phpMyFAQ_Data_Provider(array(), "1.0"));
 
-$c->collect();
-var_Dump($c->get());
+echo new Questionnaire_Renderer($c);
 
