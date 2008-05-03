@@ -145,33 +145,33 @@ class Questionnaire_Data_Collector
     }
 }
 
-/**
- * Output the data as an HTML Definition List.
- *
- * @param   mixed
- * @param   string
- * @param   string
- * @return  void
- */
-function data_printer($value, $key, $ident = "\n\t")
-{
-    echo $ident, '<dt>', htmlentities($key), '</dt>', $ident, "\t", '<dd>';
-    if (is_array($value)) {
-        echo '<dl>';
-        array_walk($value, 'data_printer', $ident."\t");
-        echo $ident, "\t", '</dl>';
-    } else {
-        echo htmlentities($value);
-    }
-    echo '</dd>';
-}
-
 class Questionnaire_Renderer {
     protected $url = "http://www.phpmyfaq.de/stats/getstatdata.php";
     protected $collector;
 
     public function __construct(Questionnaire_Data_Collector $collector) {
         $this->collector = $collector;
+    }
+
+    /**
+     * Output the data as an HTML Definition List.
+     *
+     * @param   mixed
+     * @param   string
+     * @param   string
+     * @return  void
+     */
+    function data_printer($value, $key, $ident = "\n\t")
+    {
+        echo $ident, '<dt>', htmlentities($key), '</dt>', $ident, "\t", '<dd>';
+        if (is_array($value)) {
+            echo '<dl>';
+            array_walk($value, array($this, 'data_printer'), $ident."\t");
+            echo $ident, "\t", '</dl>';
+        } else {
+            echo htmlentities($value);
+        }
+        echo '</dd>';
     }
 
     public function __toString()
@@ -260,7 +260,7 @@ function show(item) {
         <dl>
 EOT;
     $options = $this->collector->get();
-    array_walk($options, 'data_printer');
+    array_walk($options, array($this, 'data_printer'));
     echo '</dl><input type="hidden" name="systemdata" value="'.htmlspecialchars(serialize($options), ENT_QUOTES).'" />';
     echo <<<EOT
     </div>
