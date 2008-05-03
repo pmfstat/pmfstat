@@ -167,6 +167,7 @@ function data_printer($value, $key, $ident = "\n\t")
 }
 
 class Questionnaire_Renderer {
+    protected $url = "http://www.phpmyfaq.de/stats/getstatdata.php";
     protected $collector;
 
     public function __construct(Questionnaire_Data_Collector $collector) {
@@ -200,7 +201,7 @@ function show(item) {
 //]]>
 </script>
 <iframe onload="iframeUpdated();" name="questionaireResult" style="display:none"></iframe>
-<form action="http://www.phpmyfaq.de/stats/getstatdata.php" method="post" target="questionaireResult" id="questionnaireForm">
+<form action="{$this->url}" method="post" target="questionaireResult" id="questionnaireForm">
 
     <p class="center">For further development we would like to get some feedback from our users.<br />Therefore we'd ask you to spend us a few minutes from your time and answer a few questions.</p>
     <p class="center">If you don't want to you can directly visit <a href="../index.php">your version of phpMyFAQ</a> or login into your <a href="../admin/index.php">admin section</a>.</p>
