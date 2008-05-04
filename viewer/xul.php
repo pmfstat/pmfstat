@@ -16,20 +16,8 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
     <script src="xul.js" />
 
 <popupset>
-  <popup id="svgmenu">
-    <menuitem label="Export as SVG" oncommand="exportChart('svg', this);" />
-    <menuitem label="Export as PNG" oncommand="exportChart('png', this);" />
-    <menuitem label="Save SVG on server" oncommand="exportToServer('svg', this);" />
-    <menuitem label="Save PNG on server" oncommand="exportToServer('png', this);" />
-  </popup>
-</popupset>
-
-<popupset>
   <popup id="dumpmenu">
     <menuitem label="Add to filter" oncommand="" />
-    <menuitem label="Export as HTML" oncommand="exportDump('html', this);" />
-    <menuitem label="Export as CSV" oncommand="exportDump('csv', this);" />
-    <menuitem label="Export as SQL" oncommand="exportDump('sql', this);" />
   </popup>
 </popupset>
 
@@ -41,6 +29,25 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
     <menuitem label="Add filter for OS = Windows" oncommand="addToFilter('System_OS = &quot;WINNT&quot;');" />
   </popup>
 </popupset>
+
+<menubar id="main-menubar">
+    <menu id="file-menu" label="File">
+      <menupopup id="file-popup">
+         <menuitem label="Export as SVG" oncommand="exportChart('svg', this);" />
+         <menuitem label="Export as PNG" oncommand="exportChart('png', this);" />
+         <menuitem label="Save SVG on server" oncommand="exportToServer('svg', this);" />
+         <menuitem label="Save PNG on server" oncommand="exportToServer('png', this);" />
+
+      </menupopup>
+    </menu>
+    <menu id="dump-menu" label="Dump">
+      <menupopup id="dumpmenu">
+        <menuitem label="Export as HTML" oncommand="exportDump('html', this);" />
+        <menuitem label="Export as CSV" oncommand="exportDump('csv', this);" />
+        <menuitem label="Export as SQL" oncommand="exportDump('sql', this);" />
+      </menupopup>
+    </menu>
+</menubar>
 
     <hbox>
       <image src="pmf_logo.png" width="32" height="32" />
@@ -62,7 +69,7 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
                     </listbox>
                     <splitter state="open" collapse="before" resizebefore="closest" resizeafter="closest"><grippy /></splitter>
                     <vbox flex="3">
-                        <iframe id="diagramframe" src="about:blank"  context="svgmenu" flex="4" />
+                        <iframe id="diagramframe" src="about:blank" flex="4" />
                     </vbox>
                 </hbox>
             </tabpanel>

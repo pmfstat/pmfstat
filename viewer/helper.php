@@ -1,8 +1,8 @@
 <?php
 //ini_set('include_path', './ezc/trunk');
 //require_once "./ezc/trunk/Base/src/base.php";
-ini_set('include_path', '.:./ezcomponents-2007.1beta1');
-require_once "./ezcomponents-2007.1beta1/Base/src/base.php";
+ini_set('include_path', '.:./ezc');
+require_once "./ezc/Base/src/base.php";
 function __autoload( $className )
 {
     ezcBase::autoload( $className );

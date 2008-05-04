@@ -21,13 +21,25 @@ if (!empty($_GET['filter'])) {
 $d = iterator_to_array($def);
 if (isset($_GET['d']) && isset($d[$_GET['d']])) {
     $q = $d[$_GET['d']];
-} elseif (!isset($_GET['d']) || ($_GET['d'] != 'settings' && $_GET['d'] != 'timeline')) {
+} elseif (!isset($_GET['d']) || ($_GET['d'] != 'settings' && $_GET['d'] != 'timeline' && $_GET['d'] != 'php_by_pmf')) {
     die('Unknown chart selected!');
 }
 
 $width  = isset($_GET['width'])  && is_numeric($_GET['width'])  ? (int)$_GET['width'] :  800;
 $height = isset($_GET['height']) && is_numeric($_GET['height']) ? (int)$_GET['height'] : 600;
 $type   = (isset($_GET['format']) && in_array($_GET['format'], array('svg', 'png'))) ? $_GET['format'] : 'svg';
+
+class BlubIterator extends IteratorIterator {
+    public function key() {
+        $tmp = parent::current();
+        return $tmp[0];
+    }
+
+    public function current() {
+        $tmp = parent::current();
+        return $tmp[1];
+    }
+}
 
 try {
     switch ($_GET['d']) {
@@ -42,8 +54,18 @@ try {
         }
         break;
 
+    case 'php_by_pmf':
+        $graph = new ezcGraphLineChart();
+
+        $graph->title = "PHP Version by phpMyFAQ Version";
+        foreach (array('4.3', '4.4', '5.0', '5.1', '5.2') as $ver) {
+            $sql = "SELECT `phpMyFAQ_main.currentVersion` as pmfver, 100*COUNT(*)/(SELECT COUNT(*) FROM  stat WHERE `phpMyFAQ_main.currentVersion` = pmfver AND ($filter)) FROM stat WHERE PHP_version LIKE '$ver%' AND LENGTH(`phpMyFAQ_main.currentVersion`) = 5 AND ($filter) GROUP BY `phpMyFAQ_main.currentVersion`";
+            $graph->data['PHP '.$ver] = new ezcGraphArrayDataSet(new BlubIterator($pdo->query($sql)));
+        }
+        break;
     case 'timeline':
         $graph = new ezcGraphLineChart();
+        $graph->title = "Number of reports";
         $graph->legend = false;
         $graph->title = "Number of reports";
         $graph->xAxis = new ezcGraphChartElementDateAxis();
@@ -77,11 +99,11 @@ case 'png':
     header('Content-type: image/png');
 
     $graph->driver = new ezcGraphGdDriver();
-    $graph->options->font = 'ezcomponents-2007.1beta1/Graph/docs/tutorial_font.ttf';
+    $graph->options->font = './ezc/Graph/docs/tutorial/tutorial_font.ttf';
     $graph->driver->options->imageFormat = IMG_PNG;
 
     if (!isset($_GET['export']) || $_GET['export'] != 'server') {
-        $graph->render(800, 700, 'tmp.png');
+        $graph->render($width, $height, 'tmp.png');
         echo file_get_contents('tmp.png');
         unlink('tmp.png');
     } else {

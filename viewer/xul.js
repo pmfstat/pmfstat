@@ -175,6 +175,11 @@ function getDump(force)
         return;
     }
 
+    if (document.getElementById('filtertext').value == "") {
+        alert("No Filter set, dump too most likely too large. Please set a filter, then try again!");
+        return;
+    }
+
     doXHRequest('json.php?action=dump&filter='+escape(document.getElementById('filtertext').value), loadedDump);
 }
 

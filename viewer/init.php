@@ -7,7 +7,7 @@ include('./iteratoren.php');
 
 ######################################
 
-if ($_ENV['HOSTNAME'] == 'johannes.nop') {
+if ($_ENV['HOSTNAME'] == 'goldfinger.johannes.nop') {
     $db_server = 'localhost'; $db_name = 'pmf_stat'; $db_user = 'root'; $db_pw = '';
 } else {
     require_once('../inc/sql.php');

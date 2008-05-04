@@ -16,7 +16,10 @@ case 'chartlist':
     $it = new AppendIterator();
     $it->append(new ArrayIterator(array('timeline' => array('Number of reports', 'SELECT report_date FROM stat WHERE {filter} ORDER BY report_date'))));
     $it->append($def);
-    $it->append(new ArrayIterator(array('settings' => array('PHP Settings by PHP Version', ''))));
+    $it->append(new ArrayIterator(array(
+        'settings' => array('PHP Settings by PHP Version', ''),
+        'php_by_pmf' => array('PHP Version by PMF Version', ''),
+    )));
     echo json_encode(array(
         'dat' => iterator_to_array($it),
     ));

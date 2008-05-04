@@ -2,7 +2,7 @@
 require_once('./init.php');
 
 $mode   = isset($_GET['mode'])   ? $_GET['mode']   : 'html';
-$filter = isset($_GET['filter']) ? stripslashes($_GET['filter']) : 1;
+$filter = !empty($_GET['filter']) ? stripslashes($_GET['filter']) : 1;
 
 $stmt = $pdo->query("SELECT * FROM stat WHERE $filter");
 $stmt->setFetchMode(PDO::FETCH_ASSOC);
