@@ -20,7 +20,10 @@ function getFilterAndSettingsURLString()
         + escape(document.getElementById('setting_chart_y').value)
         + '&'
         + 'pie_threshold='
-        + escape(document.getElementById('setting_chart_pie_threshold').value);
+        + escape(document.getElementById('setting_chart_pie_threshold').value)
+        + '&'
+        + 'timeline_steps='
+        + escape(document.getElementById('setting_timeline_steps').value);
 }
 
 function doXHRequest(url, success)

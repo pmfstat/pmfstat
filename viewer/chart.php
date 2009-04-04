@@ -75,8 +75,24 @@ try {
         $graph->xAxis = new ezcGraphChartElementDateAxis();
         $graph->xAxis->dateFormat = "Y/m/d";
 
-        $sql = "SELECT report_date FROM stat WHERE $filter ORDER BY report_date";
-        $graph->data['Machine 1'] = new ezcGraphArrayDataSet(new ReportGrowthStepIterator($pdo->query($sql)));
+        $sql = 'CREATE TEMPORARY TABLE IF NOT EXISTS report_dates (report_date int not null) SELECT UNIX_TIMESTAMP(report_date) AS report_date FROM stat';
+        $row = $pdo->query($sql);
+        $sql = "SELECT report_date FROM report_dates ORDER BY report_date ASC LIMIT 1";
+        $row = $pdo->query($sql)->fetch();
+        $start = $row[0];
+        $sql = "SELECT report_date FROM report_dates ORDER BY report_date DESC LIMIT 1";
+        $row = $pdo->query($sql)->fetch();
+        $end = $row[0];
+        $duration = $end - $start;
+        $step = $duration / ($_REQUEST['timeline_steps']-1);
+        $data = array();
+        for ($i = $start; $i <= $end; $i += $step) {
+            $sql = "SELECT COUNT(*) FROM report_dates WHERE report_date < $i";
+            $row = $pdo->query($sql)->fetch();
+            $data[date('Y-m-d', $i)] = $row[0];
+        }
+
+        $graph->data['Machine 1'] = new ezcGraphArrayDataSet($data);
         break;
 
     default;

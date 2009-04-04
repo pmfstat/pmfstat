@@ -114,8 +114,12 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
                     </menulist>
                   </row>
                   <row>
-                    <label>Pie chart Summary Threshold:</label>
-                    <textbox id="setting_chart_pie_threshold" min="0" max="100" type="number" value="1" hidespinbuttons="false" />%
+                    <label>Pie chart Summary Threshold: (in percent)</label>
+                    <textbox id="setting_chart_pie_threshold" min="0" max="100" type="number" value="1" hidespinbuttons="false" />
+                  </row>
+                  <row>
+                    <label>Steps for the timeline:</label>
+                    <textbox id="setting_timeline_steps" min="2" max="500" type="number" value="50" hidespinbuttons="false" />
                   </row>
                 </rows>
               </grid>
