@@ -186,8 +186,10 @@ function getDump(force)
     }
 
     if (document.getElementById('filtertext').value == "") {
-        alert("No Filter set, dump too most likely too large. Please set a filter, then try again!");
-        return;
+        var c = confirm("No Filter set, dump too most likely too large. Are you sure you want to do this?");
+        if (!c) {
+            return;
+        }
     }
 
     doXHRequest('json.php?action=dump&filter='+escape(document.getElementById('filtertext').value), loadedDump);
