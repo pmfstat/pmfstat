@@ -8,6 +8,7 @@ include('./init.php');
 * @param filter SQL WHERE clause to use
 * @param width  Width of the picture
 * @param height Height of the picture
+* @param pie_threshold Threshold used for grouping with pie charts
 * @param format Either svg or png
 * @param export Send as attachment if set but != server, if set to server stores the chart on the server
 */
