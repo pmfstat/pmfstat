@@ -77,13 +77,18 @@ try {
 
     default;
         $graph = new VersionGraph($pdo, $q[0], $q[1], $filter);
-        $graph->renderer = new ezcGraphRenderer3d(); 
+        $graph->renderer = new ezcGraphRenderer3d();
+        if (isset($_REQUEST['pie_threshold'])) {
+            $graph->options->percentThreshold = $_REQUEST['pie_threshold']/100;
+            $graph->options->summarizeCaption = 'Others';
+        }
         break;
     }
 
 } catch (PDOException $exception) {
     echo "<p>Error while performing the database query. Possibly an invalid filter.</p>";
-    echo "<pre>", $exception->getMessage(), '</pre>';
+    echo "<pre>", $exception /*->getMessage()*/, '</pre>';
+
     die();
 }
 

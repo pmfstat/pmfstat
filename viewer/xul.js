@@ -10,7 +10,17 @@ function initStatViewer()
 
 function getFilterAndSettingsURLString()
 {
-    return 'filter=' + escape(document.getElementById('filtertext').value) + '&' + 'width='  + escape(document.getElementById('setting_chart_x').value) + '&' + 'height=' + escape(document.getElementById('setting_chart_y').value);
+    return 'filter='
+        + escape(document.getElementById('filtertext').value)
+        + '&'
+        + 'width='
+        + escape(document.getElementById('setting_chart_x').value)
+        + '&'
+        + 'height='
+        + escape(document.getElementById('setting_chart_y').value)
+        + '&'
+        + 'pie_threshold='
+        + escape(document.getElementById('setting_chart_pie_threshold').value);
 }
 
 function doXHRequest(url, success)
