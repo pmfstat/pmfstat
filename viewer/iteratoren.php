@@ -172,7 +172,7 @@ class PHPExtensionsIterator extends ArrayIterator
     public function current()
     {
         $ext = parent::current();
-        $query = sprintf('SELECT "ja", count(*) FROM stat WHERE ({filter}) AND PHP_extensions LIKE "%%%1$s%%" UNION SELECT "nein", count(*) FROM stat WHERE ({filter}) AND PHP_extensions NOT LIKE "%%%1$s%%"',
+        $query = sprintf('SELECT "yes", count(*) FROM stat WHERE ({filter}) AND PHP_extensions LIKE "%%%1$s%%" UNION SELECT "no", count(*) FROM stat WHERE ({filter}) AND PHP_extensions NOT LIKE "%%%1$s%%"',
                          $ext);
         return array($ext.' Extension', $query);
     }
