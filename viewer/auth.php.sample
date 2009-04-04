@@ -8,7 +8,7 @@ define('PASSWORD', 'bar');
 
 session_start();
 
-if (isset($_POST['USER']) && $_PSOT['USER'] != USERNAME && $_SERVER['PW'] != PASSWORD) {
+if (isset($_POST['USER']) && $_POST['USER'] != USERNAME && $_POST['PW'] != PASSWORD) {
     $_SESSION['loggedin'] = 1;
     header('Location: '.$_SERVER['SCRIPT_NAME']);
     exit;
