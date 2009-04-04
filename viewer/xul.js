@@ -10,7 +10,17 @@ function initStatViewer()
 
 function getFilterAndSettingsURLString()
 {
-    return 'filter=' + escape(document.getElementById('filtertext').value) + '&' + 'width='  + escape(document.getElementById('setting_chart_x').value) + '&' + 'height=' + escape(document.getElementById('setting_chart_y').value);
+    return 'filter='
+        + escape(document.getElementById('filtertext').value)
+        + '&'
+        + 'width='
+        + escape(document.getElementById('setting_chart_x').value)
+        + '&'
+        + 'height='
+        + escape(document.getElementById('setting_chart_y').value)
+        + '&'
+        + 'pie_threshold='
+        + escape(document.getElementById('setting_chart_pie_threshold').value);
 }
 
 function doXHRequest(url, success)
@@ -176,8 +186,10 @@ function getDump(force)
     }
 
     if (document.getElementById('filtertext').value == "") {
-        alert("No Filter set, dump too most likely too large. Please set a filter, then try again!");
-        return;
+        var c = confirm("No Filter set, dump too most likely too large. Are you sure you want to do this?");
+        if (!c) {
+            return;
+        }
     }
 
     doXHRequest('json.php?action=dump&filter='+escape(document.getElementById('filtertext').value), loadedDump);

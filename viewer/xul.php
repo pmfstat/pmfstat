@@ -113,6 +113,10 @@ echo '<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>';
                       </menupopup>
                     </menulist>
                   </row>
+                  <row>
+                    <label>Pie chart Summary Threshold:</label>
+                    <textbox id="setting_chart_pie_threshold" min="0" max="100" type="number" value="1" hidespinbuttons="false" />%
+                  </row>
                 </rows>
               </grid>
             </tabpanel>

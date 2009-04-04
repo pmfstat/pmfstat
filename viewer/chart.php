@@ -8,6 +8,7 @@ include('./init.php');
 * @param filter SQL WHERE clause to use
 * @param width  Width of the picture
 * @param height Height of the picture
+* @param pie_threshold Threshold used for grouping with pie charts
 * @param format Either svg or png
 * @param export Send as attachment if set but != server, if set to server stores the chart on the server
 */
@@ -77,13 +78,18 @@ try {
 
     default;
         $graph = new VersionGraph($pdo, $q[0], $q[1], $filter);
-        $graph->renderer = new ezcGraphRenderer3d(); 
+        $graph->renderer = new ezcGraphRenderer3d();
+        if (isset($_REQUEST['pie_threshold'])) {
+            $graph->options->percentThreshold = $_REQUEST['pie_threshold']/100;
+            $graph->options->summarizeCaption = 'Others';
+        }
         break;
     }
 
 } catch (PDOException $exception) {
     echo "<p>Error while performing the database query. Possibly an invalid filter.</p>";
-    echo "<pre>", $exception->getMessage(), '</pre>';
+    echo "<pre>", $exception /*->getMessage()*/, '</pre>';
+
     die();
 }
 
