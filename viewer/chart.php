@@ -71,7 +71,7 @@ try {
         $graph = new ezcGraphLineChart();
         $graph->title = "Number of reports";
         $graph->legend = false;
-        $graph->title = "Number of reports";
+        
         $graph->xAxis = new ezcGraphChartElementDateAxis();
         $graph->xAxis->dateFormat = "Y/m/d";
 
