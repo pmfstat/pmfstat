@@ -12,7 +12,6 @@ PMF_Init::cleanRequest();
 
 $dat = unserialize(@$_POST['systemdata']);
 if (!is_array($dat)) {
-print_R($_POST);
     die("Internal server error while processing statistic data: Bad input!");
 }
 $dat['q'] = @$_POST['q'];
@@ -48,4 +47,4 @@ foreach ($values as $key => $value) {
 }
 $stmt->execute();
 
-echo '<p>Thank you for yur suppoert! Have fun with your FAQ!</p>';
+echo '<p>Thank you for yur support! Have fun with your FAQ!</p>';
