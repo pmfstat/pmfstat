@@ -1,8 +1,12 @@
 <?php
 include('./init.php');
 
+function invalid_action_error() {
+    die(json_encode("No valid action selected"));
+}
+
 if (!isset($_GET['action'])) {
-    die(json_encode("Keine action"));
+    invalid_action_error();
 }
 
 $filter = "";
@@ -49,4 +53,6 @@ case 'dump':
 case 'querylist':
     echo json_encode(implode($pdo->getQueries(), "\n"));
     break;
+default:
+    invalid_action_error();
 }
