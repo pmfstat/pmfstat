@@ -132,4 +132,6 @@ case 'svg':
     }
     $graph->render($width, $height, $filename);
     break;
+default:
+    die("Invalid file type");
 }
