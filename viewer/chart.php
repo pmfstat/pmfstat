@@ -56,10 +56,13 @@ try {
         break;
 
     case 'php_by_pmf':
-        $graph = new ezcGraphLineChart();
+        $graph = new ezcGraphRadarChart();
 
         $graph->title = "PHP Version by phpMyFAQ Version";
-        foreach (array('4.3', '4.4', '5.0', '5.1', '5.2') as $ver) {
+
+        $v = iterator_to_array(new BlubIterator($pdo->query("SELECT LEFT(PHP_version, 3) AS v FROM stat GROUP BY v")));
+
+        foreach ($v as $ver => $null) {
             $sql = "SELECT `phpMyFAQ_main.currentVersion` as pmfver, 100*COUNT(*)/(SELECT COUNT(*) FROM  stat WHERE `phpMyFAQ_main.currentVersion` = pmfver AND ($filter)) FROM stat WHERE PHP_version LIKE '$ver%' AND LENGTH(`phpMyFAQ_main.currentVersion`) = 5 AND ($filter) GROUP BY `phpMyFAQ_main.currentVersion`";
             $graph->data['PHP '.$ver] = new ezcGraphArrayDataSet(new BlubIterator($pdo->query($sql)));
         }
