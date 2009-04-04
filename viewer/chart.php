@@ -128,9 +128,9 @@ case 'png':
     $graph->driver->options->imageFormat = IMG_PNG;
 
     if (!isset($_GET['export']) || $_GET['export'] != 'server') {
-        $graph->render($width, $height, 'tmp.png');
-        echo file_get_contents('tmp.png');
-        unlink('tmp.png');
+        $graph->render($width, $height, 'svg/tmp.png');
+        echo file_get_contents('svg/tmp.png');
+        unlink('svg/tmp.png');
     } else {
         $graph->render($width, $height, 'svg/'.$filename);
         echo 'svg/'.rawurlencode($filename);
