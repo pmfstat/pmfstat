@@ -42,6 +42,52 @@ class BlubIterator extends IteratorIterator {
     }
 }
 
+class TimelineIterator implements Iterator {
+    private $pdo;
+    private $start;
+    private $end;
+    private $duration;
+    private $step;
+    private $position;
+
+    public function __construct(PDO $pdo, $stepcount) {
+        $this->pdo = $pdo;
+
+        $sql = 'CREATE TEMPORARY TABLE IF NOT EXISTS report_dates (report_date int not null) SELECT UNIX_TIMESTAMP(report_date) AS report_date FROM stat';
+        $row = $pdo->query($sql);
+        $sql = "SELECT report_date FROM report_dates ORDER BY report_date ASC LIMIT 1";
+        $row = $pdo->query($sql)->fetch();
+        $this->start = $row[0];
+        $sql = "SELECT report_date FROM report_dates ORDER BY report_date DESC LIMIT 1";
+        $row = $pdo->query($sql)->fetch();
+        $this->end = $row[0];
+        $this->duration = $this->end - $this->start;
+        $this->step = $this->duration / ($stepcount-1);
+    }
+
+    public function rewind() {
+        $this->position = $this->start;
+    }
+
+    public function next() {
+        $this->position += $this->step;
+    }
+
+    public function valid() {
+        return $this->position < $this->end;
+    }
+
+    public function key() {
+        return date('Y-m-d', $this->position);
+    }
+
+    public function current() {
+        $sql = "SELECT COUNT(*) FROM report_dates WHERE report_date < ".$this->position;
+        $row = $this->pdo->query($sql)->fetch();
+        return $row[0];
+    }
+}
+
 try {
     switch ($_GET['d']) {
     case 'settings':
@@ -75,23 +121,7 @@ try {
         $graph->xAxis = new ezcGraphChartElementDateAxis();
         $graph->xAxis->dateFormat = "Y/m/d";
 
-        $sql = 'CREATE TEMPORARY TABLE IF NOT EXISTS report_dates (report_date int not null) SELECT UNIX_TIMESTAMP(report_date) AS report_date FROM stat';
-        $row = $pdo->query($sql);
-        $sql = "SELECT report_date FROM report_dates ORDER BY report_date ASC LIMIT 1";
-        $row = $pdo->query($sql)->fetch();
-        $start = $row[0];
-        $sql = "SELECT report_date FROM report_dates ORDER BY report_date DESC LIMIT 1";
-        $row = $pdo->query($sql)->fetch();
-        $end = $row[0];
-        $duration = $end - $start;
-        $step = $duration / ($_REQUEST['timeline_steps']-1);
-        $data = array();
-        for ($i = $start; $i <= $end; $i += $step) {
-            $sql = "SELECT COUNT(*) FROM report_dates WHERE report_date < $i";
-            $row = $pdo->query($sql)->fetch();
-            $data[date('Y-m-d', $i)] = $row[0];
-        }
-
+        $data = new TimelineIterator($pdo, $_REQUEST['timeline_steps']);
         $graph->data['Machine 1'] = new ezcGraphArrayDataSet($data);
         break;
 
