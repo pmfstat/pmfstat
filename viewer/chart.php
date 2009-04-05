@@ -29,6 +29,7 @@ if (isset($_GET['d']) && isset($d[$_GET['d']])) {
 $width  = isset($_GET['width'])  && is_numeric($_GET['width'])  ? (int)$_GET['width'] :  800;
 $height = isset($_GET['height']) && is_numeric($_GET['height']) ? (int)$_GET['height'] : 600;
 $type   = (isset($_GET['format']) && in_array($_GET['format'], array('svg', 'png'))) ? $_GET['format'] : 'svg';
+$background = isset($_GET['background']) ? $_GET['background'] : null;
 
 class BlubIterator extends IteratorIterator {
     public function key() {
@@ -112,7 +113,7 @@ try {
         $v = iterator_to_array(new BlubIterator($pdo->query("SELECT LEFT(PHP_version, 3) AS v FROM stat GROUP BY v")));
 
         foreach ($v as $ver => $null) {
-            $sql = "SELECT `phpMyFAQ_main.currentVersion` as pmfver, 100*COUNT(*)/(SELECT COUNT(*) FROM  stat WHERE `phpMyFAQ_main.currentVersion` = pmfver AND ($filter)) FROM stat WHERE PHP_version LIKE '$ver%' AND LENGTH(`phpMyFAQ_main.currentVersion`) = 5 AND ($filter) GROUP BY `phpMyFAQ_main.currentVersion`";
+            $sql = "SELECT `phpMyFAQ_main.currentVersion` as pmfver, COUNT(*) FROM stat WHERE PHP_version LIKE '$ver%' AND LENGTH(`phpMyFAQ_main.currentVersion`) = 5 AND ($filter) GROUP BY `phpMyFAQ_main.currentVersion`";
             $graph->data['PHP '.$ver] = new ezcGraphArrayDataSet(new BlubIterator($pdo->query($sql)));
         }
         break;
@@ -150,6 +151,10 @@ $filename = $_GET['d'].'_'.date('YmdHmi').'.'.$type;
 
 if (isset($_GET['export']) && $_GET['export'] != 'server') {
     header('Content-Disposition: attachment; filename="'.$filename.'"');
+}
+
+if ($background) {
+    $graph->background = '#'.$background;
 }
 
 switch ($type) {
