@@ -54,8 +54,6 @@ class TimelineIterator implements Iterator {
     private $position;
 
     public function __construct(PDO $pdo, $stepcount) {
-        $this->pdo = $pdo;
-
         $sql = 'CREATE TEMPORARY TABLE IF NOT EXISTS report_dates (report_date int not null) SELECT UNIX_TIMESTAMP(report_date) AS report_date FROM stat';
         $row = $pdo->query($sql);
         $sql = "SELECT report_date FROM report_dates ORDER BY report_date ASC LIMIT 1";
