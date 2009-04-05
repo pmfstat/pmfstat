@@ -1,6 +1,31 @@
 <?php
 include('./init.php');
 
+class ItemIterator extends IteratorIterator {
+    private $idx;
+
+    public function rewind() {
+        $this->idx = 0;
+        parent::rewind();
+    }
+
+    public function next() {
+        $this->idx++;
+        parent::next();
+    }
+    public function key() {
+        return $this->idx;
+    }
+
+    public function current() {
+        $c = parent::current();
+        return array(
+            'name'  => parent::key(),
+            'label' => $c[0],
+        );
+    }
+}
+
 function invalid_action_error() {
     die(json_encode("No valid action selected"));
 }
@@ -25,7 +50,9 @@ case 'chartlist':
         'php_by_pmf' => array('PHP Version by PMF Version', ''),
     )));
     echo json_encode(array(
-        'dat' => iterator_to_array($it),
+        'label'      => 'label',
+        'identifier' => 'name',
+        'items'      => iterator_to_array(new ItemIterator($it)),
     ));
     break;
 
