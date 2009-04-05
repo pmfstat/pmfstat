@@ -43,7 +43,10 @@ class BlubIterator extends IteratorIterator {
 }
 
 class TimelineIterator implements Iterator {
-    private $pdo;
+    /**
+     * @var PDOStatement
+     */
+    private $stmt;
     private $start;
     private $end;
     private $duration;
@@ -63,6 +66,7 @@ class TimelineIterator implements Iterator {
         $this->end = $row[0];
         $this->duration = $this->end - $this->start;
         $this->step = $this->duration / ($stepcount-1);
+        $this->stmt = $pdo->prepare("SELECT COUNT(*) FROM report_dates WHERE report_date < ?");
     }
 
     public function rewind() {
@@ -82,8 +86,9 @@ class TimelineIterator implements Iterator {
     }
 
     public function current() {
-        $sql = "SELECT COUNT(*) FROM report_dates WHERE report_date < ".$this->position;
-        $row = $this->pdo->query($sql)->fetch();
+        $this->stmt->bindParam(1, $this->position);
+        $this->stmt->execute();
+        $row = $this->stmt->fetch();
         return $row[0];
     }
 }
