@@ -27,7 +27,7 @@ include('./auth.php');
                     </div>
                 </div>
                 <div dojoType="dijit.layout.ContentPane" splitter="true" title="Preview" region="center">
-                    <iframe src="about:blank" id="chartFrame" style="width:100%; height:100%;">
+                    <iframe src="about:blank" id="chartFrame" style="border:0px; width:100%; height:100%;">
                     </iframe>
                 </div>
             </div>
