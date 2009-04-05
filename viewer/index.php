@@ -9,12 +9,16 @@ include('./auth.php');
     <head>
         <title>phpMyFAQ stats</title>
          <style type="text/css">
-             @import "http://o.aolcdn.com/dojo/1.3/dijit/themes/tundra/tundra.css";
-             @import "http://o.aolcdn.com/dojo/1.3/dojo/resources/dojo.css";
+             @import "dojo-release-1.3.0/dijit/themes/tundra/tundra.css";
+             @import "dojo-release-1.3.0/dojo/resources/dojo.css";
          </style>
     </head>
     <body class="tundra">
         <div dojoType="dojo.data.ItemFileReadStore" url="json.php?action=chartlist" jsid="chartListStore" />
+
+        <div id="aboutDialog" dojoType="dijit.Dialog" title="About">
+            This is a pmf stat viewer using Dojo
+        </div>
 
         <div dojoType="dijit.MenuBar" id="mainMenu">
             <div dojoType="dijit.PopupMenuBarItem">
@@ -25,9 +29,9 @@ include('./auth.php');
                 </div>
             </div>
             <div dojoType="dijit.PopupMenuBarItem">
-                <span>Edit</span>
+                <span>Help</span>
                 <div dojoType="dijit.Menu" id="helpMenu">
-                    <div dojoType="dijit.MenuItem" onClick="alert('edit 1')">About</div>
+                    <div dojoType="dijit.MenuItem" onClick='dijit.byId("aboutDialog").show();'>About</div>
                 </div>
             </div>
         </div>
@@ -50,8 +54,8 @@ include('./auth.php');
                     </iframe>
                 </div>
             </div>
-            <div id="aboutTab" dojoType="dijit.layout.ContentPane" title="About">
-                This is a pmf stat viewer using Dojo
+            <div id="dumpTab" dojoType="dijit.layout.ContentPane" title="Dump">
+                Maybe I add a table like in the XUL interface here, maybe I get rid of this whole tab business...
             </div>
         </div>
     </body>
@@ -69,5 +73,6 @@ include('./auth.php');
        dojo.require("dijit.MenuBar");
        dojo.require("dijit.MenuItem");
        dojo.require("dijit.PopupMenuBarItem");
+       dojo.require("dijit.Dialog");
      </script>
 </html>
