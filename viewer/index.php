@@ -9,12 +9,29 @@ include('./auth.php');
     <head>
         <title>phpMyFAQ stats</title>
          <style type="text/css">
-             @import "http://o.aolcdn.com/dojo/1.2/dijit/themes/tundra/tundra.css";
-             @import "http://o.aolcdn.com/dojo/1.2/dojo/resources/dojo.css";
+             @import "http://o.aolcdn.com/dojo/1.3/dijit/themes/tundra/tundra.css";
+             @import "http://o.aolcdn.com/dojo/1.3/dojo/resources/dojo.css";
          </style>
     </head>
     <body class="tundra">
         <div dojoType="dojo.data.ItemFileReadStore" url="json.php?action=chartlist" jsid="chartListStore" />
+
+        <div dojoType="dijit.MenuBar" id="mainMenu">
+            <div dojoType="dijit.PopupMenuBarItem">
+                <span>File</span>
+                <div dojoType="dijit.Menu" id="fileMenu">
+                    <div dojoType="dijit.MenuItem" onClick="alert('file 1')">File #1</div>
+                    <div dojoType="dijit.MenuItem" onClick="alert('file 2')">File #2</div>
+                </div>
+            </div>
+            <div dojoType="dijit.PopupMenuBarItem">
+                <span>Edit</span>
+                <div dojoType="dijit.Menu" id="helpMenu">
+                    <div dojoType="dijit.MenuItem" onClick="alert('edit 1')">About</div>
+                </div>
+            </div>
+        </div>
+
         <div id="mainTabContainer" dojoType="dijit.layout.TabContainer" style="width:100%;height:100%">
             <div id="chartTab" dojoType="dijit.layout.BorderContainer" title="Charts" design="sidebar">
                 <div dojoType="dijit.layout.ContentPane" splitter="true" title="Table" region="left">
@@ -38,8 +55,8 @@ include('./auth.php');
             </div>
         </div>
     </body>
-<script type="text/javascript" src="dojo-1.2.1/dojo/dojo.js"
-    djConfig="parseOnLoad:true, isDebug:true"></script>
+<script type="text/javascript" src="dojo-release-1.3.0/dojo/dojo.js"
+    djConfig="parseOnLoad:true, isDebug:false"></script>
  <script type="text/javascript">
        dojo.require("dojo.parser");
        dojo.require("dijit.Tree");
@@ -48,5 +65,9 @@ include('./auth.php');
        dojo.require("dijit.layout.SplitContainer");
        dojo.require("dijit.layout.ContentPane");
        dojo.require("dijit.layout.BorderContainer");
+       dojo.require("dijit.Menu");
+       dojo.require("dijit.MenuBar");
+       dojo.require("dijit.MenuItem");
+       dojo.require("dijit.PopupMenuBarItem");
      </script>
 </html>
