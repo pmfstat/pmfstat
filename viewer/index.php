@@ -21,9 +21,7 @@ include('./auth.php');
                      
                     <div dojoType="dijit.Tree" store="chartListStore" labelAttr="name" showRoot="false">
                         <script type="dojo/method" event="onClick" args="item">
-                            var theframe = dojo.byId("chartFrame");
-                            console.log(item);
-                            theframe.setAttribute("src",
+                            dojo.byId("chartFrame").setAttribute("src",
                                 "chart.php?d="+item.name +"&filter=&width=800&height=600&pie_threshold=1&timeline_steps=50&format=svg");
                         </script>
                     </div>
