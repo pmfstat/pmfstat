@@ -1,3 +1,9 @@
 [submodule "viewer"]
 	path = viewer
 	url = ../pmfstat_viewer
+[submodule "server"]
+	path = server
+	url = ../pmfstat_server
+[submodule "collector"]
+	path = collector
+	url = ../pmfstat_collector
