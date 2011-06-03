@@ -1,0 +1,13 @@
+pmfstat - PHP Usage Statistics Collector and Viewer
+---------------------------------------------------
+
+OpenSource developers often have a loose connection to their users. Often it
+would be interesting to gather knowledge about the PHP configurations your
+users are actually using to consider the impact when using specific features
+of the PHP platform.
+
+This projects holds some routines which are included in the phpMyFAQ installer,
+a server component receiving data and an browser interface for viewing this
+data.
+
+This code was mostly written ad hoc and not for reusability.
