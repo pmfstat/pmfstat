@@ -1,5 +1,4 @@
 <?php
-include('./auth.php');
 include('./init.php');
 
 $it = new AppendIterator();
