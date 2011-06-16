@@ -11,3 +11,6 @@ a server component receiving data and an browser interface for viewing this
 data.
 
 This code was mostly written ad hoc and not for reusability.
+
+NOTE: This repository was split up and exists for historic reasons. Please 
+refer to the individual parts!
